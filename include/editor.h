@@ -1,0 +1,4 @@
+#ifndef EDITOR_H_INCLUDED
+#define EDITOR_H_INCLUDED
+
+#endif /* EDITOR_H_INCLUDED */
