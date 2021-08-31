@@ -20,6 +20,12 @@ void move_left(int *x, int *y){
 
 int main(){
     int x,y;
+
+    FILE* demo;
+    demo = fopen("demo_file.txt","w+");
+    int size = 5;
+    char palavra[5] = "abcd";
+
     initscr();
     cbreak();   //pega todo o teclado
     keypad(stdscr,TRUE);//inicial o teclado de arrow keys e num keys
@@ -29,19 +35,21 @@ int main(){
     bkgd(COLOR_PAIR(1)); // Ativa as cores no texto e fundo
 
     move(0,0);  //inicial
-    char letra[50];
+    printw("%s",palavra);    
+    // char letra[50];
     printw("-- Teste de fazer um editor de texto -- \n");
-
+    move(1,1);  //inicial
     int ch = getch();
-    char palavra[5] = {'a','b','c'};
+    x = 1; y = 2;
     while (1){
-        printw(palavra);
+        printw("X: %d | Y: %d",x,y);
         switch(ch){
             case KEY_LEFT:
-                move_left(&x,&y);
+                if(x)
+                    x=14;
                 break;
             default:
                 break;
         }
-    }
+   }
 }
