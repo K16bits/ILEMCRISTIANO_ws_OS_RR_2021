@@ -4,10 +4,22 @@
 
 // gcc  entrada.c -o entrada  -lncurses
 
+
 void mapeamento(int* eixoX,int* eixoY){
+    int auxY,auxX;
+    getyx(stdscr,auxY,auxX);
     move(0,0);
     printw("X: %d | Y: %d",*eixoX,*eixoY);
+    printw("\nantiga Y: %d | X: %d",auxX,auxY);
+    move(auxY,auxX);
 }
+
+// void printMoveAtt(int* eixoX,int* eixoY){
+//     int oldx, oldy;
+//     getyx(stdscr, oldy, oldx);
+//     mvprintw(0, 1, "x: %d y: %d o: %d", eixoX, eixoY, -1);
+// 	move(5, 5);
+// }
 
 void moverEsquerda(int* eixoX,int* eixoY){
     //if(*eixoX-1 > 0) 
@@ -20,8 +32,8 @@ void moverDireita(int* eixoX,int* eixoY){
 void atualizaStatus(char* info){
     int oldy,oldx;
 	clrtoeol();
-    //getyx(stdscr,oldy,oldx);
-    move(5,5);
+    getyx(stdscr,oldy,oldx);
+    move(oldy,oldx);
     printw(info);
 }
 
@@ -43,8 +55,8 @@ int main(){
     bkgd(COLOR_PAIR(1)); // Ativa as cores no texto e fundo
 
     move(1,0);  //inicial
-    //printw("%s",palavra);    
     printw("--um editor de texto -- \n");
+    move(2,0);
     int ch;
     while (1){
         mapeamento(&eixoX,&eixoY);
@@ -52,11 +64,11 @@ int main(){
         switch(ch){
             case KEY_LEFT:
                 moverEsquerda(&eixoX,&eixoY);
-                atualizaStatus("esquerada");
+                //atualizaStatus("esquerada");
                 break;
             case KEY_RIGHT:
                 moverDireita(&eixoX,&eixoY);
-                atualizaStatus("direita");
+                //atualizaStatus("direita");
                 break;
             default:
                 break;
