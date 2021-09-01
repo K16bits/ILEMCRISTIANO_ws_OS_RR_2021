@@ -4,27 +4,35 @@
 
 // gcc  entrada.c -o entrada  -lncurses
 
-void print_loc(int x, int y){
-	#ifdef DEBUG
-	int oldx, oldy;
-	getyx(stdscr, oldy, oldx);
-	mvprintw(0, COLS - 20, "x: %d y: %d o: %d", x, y, y_offset);
-	move(oldy, oldx);
-	#endif
+void mapeamento(int* eixoX,int* eixoY){
+    move(0,0);
+    printw("X: %d | Y: %d",*eixoX,*eixoY);
 }
 
-void move_left(int *x, int *y){
-	if(*x - 1 > 0) move(*y, --(*x)); // move é da bibliote curses
+void moverEsquerda(int* eixoX,int* eixoY){
+    //if(*eixoX-1 > 0) 
+    move(*eixoY,--(*eixoX));
+}
+void moverDireita(int* eixoX,int* eixoY){
+    move(*eixoY,++(*eixoX));
+}
+
+void atualizaStatus(char* info){
+    int oldy,oldx;
+	clrtoeol();
+    //getyx(stdscr,oldy,oldx);
+    move(5,5);
+    printw(info);
 }
 
 
 int main(){
-    int x,y;
+    int eixoX = 0,eixoY = 0; 
 
     FILE* demo;
     demo = fopen("demo_file.txt","w+");
     int size = 5;
-    char palavra[5] = "abcd";
+    // char palavra[5] = "abcd";
 
     initscr();
     cbreak();   //pega todo o teclado
@@ -34,19 +42,21 @@ int main(){
 
     bkgd(COLOR_PAIR(1)); // Ativa as cores no texto e fundo
 
-    move(0,0);  //inicial
-    printw("%s",palavra);    
-    // char letra[50];
-    printw("-- Teste de fazer um editor de texto -- \n");
-    move(1,1);  //inicial
-    int ch = getch();
-    x = 1; y = 2;
+    move(1,0);  //inicial
+    //printw("%s",palavra);    
+    printw("--um editor de texto -- \n");
+    int ch;
     while (1){
-        printw("X: %d | Y: %d",x,y);
+        mapeamento(&eixoX,&eixoY);
+        ch = getch();
         switch(ch){
             case KEY_LEFT:
-                if(x)
-                    x=14;
+                moverEsquerda(&eixoX,&eixoY);
+                atualizaStatus("esquerada");
+                break;
+            case KEY_RIGHT:
+                moverDireita(&eixoX,&eixoY);
+                atualizaStatus("direita");
                 break;
             default:
                 break;
