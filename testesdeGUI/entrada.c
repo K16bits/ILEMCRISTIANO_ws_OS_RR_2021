@@ -1,17 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <curses.h> 
+#include <string.h>
 
 // gcc  entrada.c -o entrada  -lncurses
 
-
-void mapeamento(int* eixoX,int* eixoY){
+void mapeamento(int* eixoX,int* eixoY,char palavra[], int desl){
     int auxY,auxX;
     getyx(stdscr,auxY,auxX);
     move(0,0);
-    printw("X: %d | Y: %d",*eixoX,*eixoY);
-    printw("\nantiga Y: %d | X: %d",auxX,auxY);
-    move(auxY,auxX);
+    printw("TELA (X: %d | Y: %d)|",*eixoX,*eixoY);
+    printw("antiga(Y: %d  X: %d)",auxX,auxY);  
+    mvprintw(auxY,0,"%s",palavra);
+    move(auxY,desl);
 }
 
 // void printMoveAtt(int* eixoX,int* eixoY){
@@ -29,48 +30,42 @@ void moverDireita(int* eixoX,int* eixoY){
     move(*eixoY,++(*eixoX));
 }
 
-void atualizaStatus(char* info){
-    int oldy,oldx;
-	clrtoeol();
-    getyx(stdscr,oldy,oldx);
-    move(oldy,oldx);
-    printw(info);
-}
-
-
 int main(){
     int eixoX = 0,eixoY = 0; 
 
     FILE* demo;
     demo = fopen("demo_file.txt","w+");
-    int size = 5;
-    // char palavra[5] = "abcd";
+
 
     initscr();
+    noecho(); // Controle de entrada 
     cbreak();   //pega todo o teclado
     keypad(stdscr,TRUE);//inicial o teclado de arrow keys e num keys
     start_color();
     init_pair(1,COLOR_WHITE,COLOR_RED); //Texto(Branco) | Fundo(RED)
 
     bkgd(COLOR_PAIR(1)); // Ativa as cores no texto e fundo
-
-    move(1,0);  //inicial
-    printw("--um editor de texto -- \n");
-    move(2,0);
+    move(1,1);
     int ch;
+    char* palavra = malloc(10*sizeof(char));
+    int pos = 0;
+    int desl = 0;
     while (1){
-        mapeamento(&eixoX,&eixoY);
+        desl = strlen(palavra);
+        mapeamento(&eixoX,&eixoY,palavra,desl);
         ch = getch();
         switch(ch){
             case KEY_LEFT:
                 moverEsquerda(&eixoX,&eixoY);
-                //atualizaStatus("esquerada");
                 break;
             case KEY_RIGHT:
                 moverDireita(&eixoX,&eixoY);
-                //atualizaStatus("direita");
                 break;
-            default:
+            default:            
+                if(isprint(ch)){
+                    palavra[pos]=ch;
+                    pos+=1;
+                };
                 break;
         }
    }
