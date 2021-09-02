@@ -5,14 +5,20 @@
 
 // gcc  entrada.c -o entrada  -lncurses
 
-void mapeamento(int* eixoX,int* eixoY,char palavra[], int desl){
+void mapeamento(int* eixoX,int* eixoY){
     int auxY,auxX;
     getyx(stdscr,auxY,auxX);
     move(0,0);
     printw("TELA (X: %d | Y: %d)|",*eixoX,*eixoY);
-    printw("antiga(Y: %d  X: %d)",auxX,auxY);  
+    printw("antiga(Y: %d  X: %d)",auxX,auxY);
+    move(auxY,auxX);
+}
+
+int printVetor(int* eixoX,int* eixoY,char palavra[]){
+    int auxY,auxX;
+    getyx(stdscr,auxY,auxX);
     mvprintw(auxY,0,"%s",palavra);
-    move(auxY,desl);
+    move(auxY,auxX);
 }
 
 // void printMoveAtt(int* eixoX,int* eixoY){
@@ -31,7 +37,6 @@ void moverDireita(int* eixoX,int* eixoY){
 }
 
 int main(){
-    int eixoX = 0,eixoY = 0; 
 
     FILE* demo;
     demo = fopen("demo_file.txt","w+");
@@ -45,14 +50,15 @@ int main(){
     init_pair(1,COLOR_WHITE,COLOR_RED); //Texto(Branco) | Fundo(RED)
 
     bkgd(COLOR_PAIR(1)); // Ativa as cores no texto e fundo
-    move(1,1);
+
+    move(1,0);
+    int eixoX = 0,eixoY = 1;
     int ch;
     char* palavra = malloc(10*sizeof(char));
     int pos = 0;
-    int desl = 0;
     while (1){
-        desl = strlen(palavra);
-        mapeamento(&eixoX,&eixoY,palavra,desl);
+        mapeamento(&eixoX,&eixoY);
+        printVetor(&eixoX,&eixoY,palavra);
         ch = getch();
         switch(ch){
             case KEY_LEFT:
@@ -65,6 +71,7 @@ int main(){
                 if(isprint(ch)){
                     palavra[pos]=ch;
                     pos+=1;
+                    moverDireita(&eixoX,&eixoY);
                 };
                 break;
         }
