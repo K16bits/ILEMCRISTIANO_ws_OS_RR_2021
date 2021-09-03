@@ -18,15 +18,16 @@ int printVetor(int* eixoX,int* eixoY,char palavra[]){
     int auxY,auxX;
     getyx(stdscr,auxY,auxX);
     mvprintw(auxY,0,"%s",palavra);
+    clrtoeol();
     move(auxY,auxX);
+    refresh();
 }
 
-// void printMoveAtt(int* eixoX,int* eixoY){
-//     int oldx, oldy;
-//     getyx(stdscr, oldy, oldx);
-//     mvprintw(0, 1, "x: %d y: %d o: %d", eixoX, eixoY, -1);
-// 	move(5, 5);
-// }
+void removeChar(char* palavra,int indice){
+    int tam = strlen(palavra);
+    for(int i = indice; i < tam;i++)
+        palavra[i] = palavra[i+1];
+}
 
 void moverEsquerda(int* eixoX,int* eixoY){
     //if(*eixoX-1 > 0) 
@@ -66,6 +67,11 @@ int main(){
                 break;
             case KEY_RIGHT:
                 moverDireita(&eixoX,&eixoY);
+                break;
+            case KEY_BACKSPACE:
+                removeChar(palavra,eixoX-1);
+                moverEsquerda(&eixoX,&eixoY);
+                pos--;
                 break;
             default:            
                 if(isprint(ch)){
