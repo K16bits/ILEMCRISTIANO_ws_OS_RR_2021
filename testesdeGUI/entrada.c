@@ -30,8 +30,9 @@ void removeChar(char* palavra,int indice){
 }
 
 void moverEsquerda(int* eixoX,int* eixoY){
-    //if(*eixoX-1 > 0) 
+    if(*eixoX > 0){
     move(*eixoY,--(*eixoX));
+    } 
 }
 void moverDireita(int* eixoX,int* eixoY){
     move(*eixoY,++(*eixoX));
@@ -41,7 +42,6 @@ int main(){
 
     FILE* demo;
     demo = fopen("demo_file.txt","w+");
-
 
     initscr();
     noecho(); // Controle de entrada 
@@ -56,7 +56,13 @@ int main(){
     int eixoX = 0,eixoY = 1;
     int ch;
     char* palavra = malloc(10*sizeof(char));
-    int pos = 0;
+    palavra[0] = 'a';
+    palavra[1] = 'b';
+    palavra[2] = 'c';
+    int pos = strlen(palavra);
+    eixoX = pos;
+    move(eixoY,eixoX);
+
     while (1){
         mapeamento(&eixoX,&eixoY);
         printVetor(&eixoX,&eixoY,palavra);
@@ -69,15 +75,19 @@ int main(){
                 moverDireita(&eixoX,&eixoY);
                 break;
             case KEY_BACKSPACE:
-                removeChar(palavra,eixoX-1);
-                moverEsquerda(&eixoX,&eixoY);
-                pos--;
+
+                    removeChar(palavra,eixoX-1);
+                    moverEsquerda(&eixoX,&eixoY);
+                    pos--;
+                
                 break;
             default:            
                 if(isprint(ch)){
-                    palavra[pos]=ch;
-                    pos+=1;
-                    moverDireita(&eixoX,&eixoY);
+                    if(pos < 10){
+                        palavra[pos]=ch;
+                        pos+=1;
+                        moverDireita(&eixoX,&eixoY);
+                    }
                 };
                 break;
         }
