@@ -25,7 +25,7 @@ void open_file(file_t *p, char *file_path) {
 
 void save_file(file_t *p) {
 
-    int fd_to_write = open(p->filename, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    int fd_to_write = creat(p->filename, S_IRUSR | S_IWUSR);
     
     write(fd_to_write, p->text, strlen(p->text));
 
