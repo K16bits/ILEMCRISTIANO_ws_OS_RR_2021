@@ -16,10 +16,15 @@ int main(int argc, char *argv[]) {
     else
         return 1;
 
-    // printf("%s\n", file.text);
-    // printf("%s is %ld bytes long.\n", file.filename, file.file_size);
+    boot_screen();
 
-    save_file(&file);
+    menu_window();
+    
+    texteditor(&file);
+
+    refresh(); // Atualiza o curses
+
+    endwin(); // Termina o modo curses
 
     return 0;
 }

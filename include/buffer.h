@@ -21,5 +21,6 @@ typedef struct
 
 void open_file(file_t *p, char *file_path);
 void save_file(file_t *p);
+void *nmalloc(size_t howmuch);
 
 #endif /* BUFFER_H_INCLUDED */

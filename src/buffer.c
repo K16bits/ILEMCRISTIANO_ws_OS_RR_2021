@@ -1,9 +1,10 @@
 #include "../include/buffer.h"
+#include "../include/editor.h"
 
 void open_file(file_t *p, char *file_path) {
 
     p->filename = file_path;
-    p->text = (char *)malloc(size * sizeof(char));
+    p->text = (char *)nmalloc(size * sizeof(char));
 
     int fd_to_read = open(file_path, O_RDONLY, S_IRUSR | S_IWUSR);
     if (fd_to_read != -1) {
@@ -29,4 +30,17 @@ void save_file(file_t *p) {
     write(fd_to_write, p->text, strlen(p->text));
 
     close(fd_to_write);
+}
+
+void *nmalloc(size_t howmuch) {
+
+    void *r = malloc(howmuch);
+
+    if (howmuch == 0)
+        die("Alocando zero bytes. Por favor, relate um bug.");
+
+    if (r == NULL)
+        die("Editor de texto está sem memória!");
+
+    return r;
 }
