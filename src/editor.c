@@ -1,5 +1,6 @@
 #include "../include/editor.h"
 #include "../include/buffer.h"
+#include "../include/threads.h"
 
 void boot_screen() {
 
@@ -252,7 +253,6 @@ int texteditor(file_t *p) {
                 p->text[position] = '\n';
                 position++;
             }
-
             break;
 
         default: //  no caso de quaisquer outros caracteres além do especificado acima
@@ -264,6 +264,16 @@ int texteditor(file_t *p) {
                     position++;
             }
         }
+        
+        p->file_size = strlen(p->text);
+        
+        pthread_create(&pid_1, NULL, (void *)my_thread_1, (void *)p);
+        pthread_create(&pid_2, NULL, (void *)my_thread_2, (void *)p);
+        pthread_create(&pid_4, NULL, (void *)my_thread_4, (void *)p);
+
+        pthread_join(pid_1, NULL);
+        pthread_join(pid_2, NULL);
+        pthread_join(pid_4, NULL);
     }
 
     /* free display*/
