@@ -34,6 +34,27 @@ void my_thread_2(file_t *db) {
     save_file(&my_file);
 }
 
+void my_thread_3(file_t *db) {
+
+    file_t my_file;
+    open_file(&my_file, "my_thread_03.txt");
+    
+    int i;
+    for (i = 0; i < db->file_size; i++)
+        if (( db->text[i] >= 33 && db->text[i] <= 47) 
+                ||(db->text[i] >= 58 && db->text[i] <= 64)
+                ||(db->text[i] >= 91 && db->text[i] <= 96) 
+                ||(db->text[i] >= 123 && db->text[i] <= 126) 
+                || db->text[i] == '\n')
+            my_file.text[i] = db->text[i];
+        else
+            my_file.text[i] = ' ';
+
+    my_file.text[i] = '\0';
+
+    save_file(&my_file);
+}
+
 void my_thread_4(file_t *db) {
 
     file_t my_file;

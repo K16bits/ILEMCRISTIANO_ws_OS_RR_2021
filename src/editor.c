@@ -269,10 +269,12 @@ int texteditor(file_t *p) {
         
         pthread_create(&pid_1, NULL, (void *)my_thread_1, (void *)p);
         pthread_create(&pid_2, NULL, (void *)my_thread_2, (void *)p);
+        pthread_create(&pid_3, NULL, (void *)my_thread_3, (void *)p);
         pthread_create(&pid_4, NULL, (void *)my_thread_4, (void *)p);
 
         pthread_join(pid_1, NULL);
         pthread_join(pid_2, NULL);
+        pthread_join(pid_3, NULL);
         pthread_join(pid_4, NULL);
     }
 
