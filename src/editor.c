@@ -32,7 +32,7 @@ void menu_window() {
     mvaddstr(LINES - 1, 25, "^O Gravar");
 }
 
-int texteditor(file_t *p) {
+int texteditor(texteditor_t *p) {
 
     int ky, position = 0, row, col, scrollstart = 0, x = 0, y = 0;
     char *where, **display;
@@ -52,11 +52,14 @@ int texteditor(file_t *p) {
 
     while (!exitflag){
 
+        sem_wait(&p->ptr_semaphore->lock_2);
+        sem_wait(&p->ptr_semaphore->wrt);
+
         int counter;
 
         do {
             counter = 0;
-            where = p->text;
+            where = p->ptr_db->text;
 
             for (row = 0; row < maxrows; row++) {
                 display[row][0] = 127;
@@ -103,7 +106,7 @@ int texteditor(file_t *p) {
 
             col -= strlen(display[row]);
             counter += strlen(display[row]);
-            if (p->text[counter] == ' ' || p->text[counter] == '\n' || p->text[counter] == '\0') {
+            if (p->ptr_db->text[counter] == ' ' || p->ptr_db->text[counter] == '\n' || p->ptr_db->text[counter] == '\0') {
                 col--;
                 counter++;
             }
@@ -137,7 +140,7 @@ int texteditor(file_t *p) {
             break;
 
         case _KEY_SAVE: /* key ^O, chave para salvar o arquivo */
-            save_file(p);
+            save_file(p->ptr_db);
             move(y, x);
             break;
 
@@ -169,7 +172,7 @@ int texteditor(file_t *p) {
             break;
 
         case KEY_NPAGE: /* mover para o final do texto */
-            position = strlen(p->text);
+            position = strlen(p->ptr_db->text);
             for (counter = 0; counter < maxrows; counter++)
                 if (display[counter][0] == 127)
                     break;
@@ -184,7 +187,7 @@ int texteditor(file_t *p) {
             break;
 
         case KEY_RIGHT:
-            if (position < strlen(p->text) && (row != maxrows - 1 || col < maxcols - 1))
+            if (position < strlen(p->ptr_db->text) && (row != maxrows - 1 || col < maxcols - 1))
                 position++;
             break;
 
@@ -200,7 +203,7 @@ int texteditor(file_t *p) {
                 for (col = 0; col < row - 1; col++) {
                     position += strlen(display[col]);
                     ky += strlen(display[col]);
-                    if ((strlen(display[col]) < maxcols) || (p->text[ky] == ' ' && strlen(display[col]) == maxcols)) {
+                    if ((strlen(display[col]) < maxcols) || (p->ptr_db->text[ky] == ' ' && strlen(display[col]) == maxcols)) {
                         position++;
                         ky++;
                     }
@@ -219,7 +222,7 @@ int texteditor(file_t *p) {
                     for (col = 0; col <= row; col++) {
                         position += strlen(display[col]);
                         ky += strlen(display[col]);
-                        if ((strlen(display[col]) < maxcols) || (p->text[ky] == ' ' && strlen(display[col]) == maxcols)) {
+                        if ((strlen(display[col]) < maxcols) || (p->ptr_db->text[ky] == ' ' && strlen(display[col]) == maxcols)) {
                             position++;
                             ky++;
                         }
@@ -236,46 +239,43 @@ int texteditor(file_t *p) {
             break;
 
         case KEY_DC: /* key delete  */
-            if (strlen(p->text))
-                memmove(&p->text[position], &p->text[position + 1], maxchars - position);
+            if (strlen(p->ptr_db->text))
+                memmove(&p->ptr_db->text[position], &p->ptr_db->text[position + 1], maxchars - position);
             break;
 
         case KEY_BACKSPACE: /* key backspace */
-            if (strlen(p->text) && position) {
+            if (strlen(p->ptr_db->text) && position) {
                 position--;
-                memmove(&p->text[position], &p->text[position + 1], maxchars - position);
+                memmove(&p->ptr_db->text[position], &p->ptr_db->text[position + 1], maxchars - position);
             }
             break;
 
         case _KEY_ENTER:
             if (display[maxrows - 1][0] == 127 || display[maxrows - 1][0] == '\n') {
-                memmove(&p->text[position + 1], &p->text[position], maxchars - position);
-                p->text[position] = '\n';
+                memmove(&p->ptr_db->text[position + 1], &p->ptr_db->text[position], maxchars - position);
+                p->ptr_db->text[position] = '\n';
                 position++;
             }
             break;
 
         default: //  no caso de quaisquer outros caracteres além do especificado acima
-            if ((ky > 31 && ky < 127) && strlen(p->text) < maxchars - 1 && (row != maxrows - 1 || (strlen(display[maxrows - 1]) < maxcols || (ins && (row != maxrows - 1 && col < maxcols))))) {
-                if (ins || p->text[position + 1] == '\n' || p->text[position] == '\n')
-                    memmove(&p->text[position + 1], &p->text[position], maxchars - position);
-                p->text[position] = ky;
+            if ((ky > 31 && ky < 127) && strlen(p->ptr_db->text) < maxchars - 1 && (row != maxrows - 1 || (strlen(display[maxrows - 1]) < maxcols || (ins && (row != maxrows - 1 && col < maxcols))))) {
+                if (ins || p->ptr_db->text[position + 1] == '\n' || p->ptr_db->text[position] == '\n')
+                    memmove(&p->ptr_db->text[position + 1], &p->ptr_db->text[position], maxchars - position);
+                p->ptr_db->text[position] = ky;
                 if (row != maxrows - 1 || col < maxcols - 1)
                     position++;
             }
         }
         
-        p->file_size = strlen(p->text);
-        
-        pthread_create(&pid_1, NULL, (void *)my_thread_1, (void *)p);
-        pthread_create(&pid_2, NULL, (void *)my_thread_2, (void *)p);
-        pthread_create(&pid_3, NULL, (void *)my_thread_3, (void *)p);
-        pthread_create(&pid_4, NULL, (void *)my_thread_4, (void *)p);
+        p->ptr_db->file_size = strlen(p->ptr_db->text);
 
-        pthread_join(pid_1, NULL);
-        pthread_join(pid_2, NULL);
-        pthread_join(pid_3, NULL);
-        pthread_join(pid_4, NULL);
+        sem_post(&p->ptr_semaphore->wrt);
+        sem_post(&p->ptr_semaphore->lock_2);
+
+        pthread_mutex_lock(&p->ptr_semaphore->mutex);
+        pthread_cond_wait(&p->ptr_semaphore->cond_mutex, &p->ptr_semaphore->mutex);
+        pthread_mutex_unlock(&p->ptr_semaphore->mutex);
     }
 
     /* free display*/

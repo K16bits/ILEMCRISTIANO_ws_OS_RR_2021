@@ -3,6 +3,7 @@
 
 #include <ncurses.h>
 #include "buffer.h"
+#include "threads.h"
 
 #define _KEY_ENTER 0xA
 #define _KEY_SAVE 0xF
@@ -16,7 +17,7 @@ bool ins;
 
 void boot_screen();
 void menu_window();
-int texteditor(file_t *p);
+int texteditor(texteditor_t *p);
 char *left(char *string, const int length);
 void die(const char *msg);
 
