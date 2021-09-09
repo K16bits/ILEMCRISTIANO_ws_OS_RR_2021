@@ -3,6 +3,8 @@ Repositório para o seminário da disciplina Sistemas Operacionais – DCC 403, 
 
 O projeto consiste em um editor de texto simples em multithreads feito em C usando `ncurses`, com o sistema de backup em paralelo.
 
+![Editor test](text_editor.png)
+
 ## Dependências
 + `C99`
 + `ncurses`
